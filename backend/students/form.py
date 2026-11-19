@@ -1,0 +1,7 @@
+from django import forms
+
+class studentform(forms.Form):
+    name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    age = forms.IntegerField()
+    department = forms.CharField(max_length=100)
