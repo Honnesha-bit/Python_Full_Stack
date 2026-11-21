@@ -20,5 +20,6 @@ urlpatterns = [
 
     # Ecommerce routes
     path('products/', views.products, name='products'),
+    path('product/<int:id>/', views.product_detail, name='product_detail'),
 ]
 
