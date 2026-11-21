@@ -10,6 +10,8 @@ from datetime import timedelta
 from django.db.models import Sum
 from django.utils import timezone
 
+from django.shortcuts import get_object_or_404
+
 from .models import CartItem, WishlistItem, Order, OrderItem
 
 @login_required(login_url='login')
@@ -248,3 +250,10 @@ def register(request):
         return redirect('login')
 
     return render(request, 'student/register.html')
+
+def product_detail(request, id):
+    selected_product = get_object_or_404(product, id=id)
+
+    return render(request, 'student/product_detail.html', {
+        'product': selected_product
+    })
