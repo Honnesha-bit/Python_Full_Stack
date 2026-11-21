@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account | ShopSphere</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Arial,sans-serif}
+body{background:#f3f6ff;color:#172554;min-height:100vh}
+a{text-decoration:none;color:inherit}
+.navbar{height:75px;background:#14265d;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 6%;box-shadow:0 5px 25px #17255422}
+.logo{font-size:24px;font-weight:800;letter-spacing:-.5px}
+.logo span{color:#60a5fa}
+.navlinks{display:flex;align-items:center;gap:28px}
+.navlinks a{color:#e0e7ff;transition:.25s}
+.navlinks a:hover{color:#93c5fd}
+.logout{background:#ef4444;border:0;color:white;padding:11px 19px;border-radius:10px;font-weight:700;cursor:pointer}
+.container{width:90%;max-width:1250px;margin:35px auto}
+.hero{padding:36px;border-radius:24px;background:linear-gradient(115deg,#172f78,#2563eb,#6366f1);color:white;position:relative;overflow:hidden;box-shadow:0 18px 45px #2563eb30;animation:rise .7s ease}
+.hero:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:7%;top:-130px;background:#ffffff18;box-shadow:0 0 0 40px #ffffff0c,0 0 0 80px #ffffff08}
+.hero h1{font-size:clamp(27px,4vw,39px);margin-bottom:12px;position:relative;z-index:1}
+.hero p{color:#dbeafe;font-size:16px;position:relative;z-index:1}
+.hero .tag{display:inline-block;margin-top:20px;padding:9px 15px;background:#ffffff20;border-radius:30px;font-size:13px;position:relative;z-index:1}
+.heading{display:flex;justify-content:space-between;align-items:center;margin:35px 0 18px;gap:12px}
+.heading h2{font-size:23px}
+.heading p{color:#64748b;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.stat{background:white;border:1px solid #e8edfa;border-radius:19px;padding:24px;box-shadow:0 9px 30px #1e40af0b;transition:.3s;animation:rise .8s both}
+.stat:hover{transform:translateY(-7px);box-shadow:0 17px 35px #2563eb18}
+.stat-icon{width:49px;height:49px;display:grid;place-items:center;border-radius:15px;background:#eaf0ff;font-size:24px;margin-bottom:17px}
+.stat h3{font-size:28px;margin-bottom:5px}
+.stat p{color:#64748b;font-size:14px}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.quick a{padding:24px;background:white;border:1px solid #e8edfa;border-radius:18px;transition:.3s;box-shadow:0 8px 25px #1e40af09}
+.quick a:hover{transform:translateY(-7px) scale(1.015);border-color:#93c5fd}
+.quick .symbol{font-size:28px;margin-bottom:14px}
+.quick h3{margin-bottom:7px}
+.quick p{font-size:14px;color:#64748b;line-height:1.5}
+.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.product{background:white;border-radius:18px;padding:15px;box-shadow:0 8px 25px #1e40af0c;transition:.3s}
+.product:hover{transform:translateY(-6px)}
+.product img{width:100%;height:150px;object-fit:cover;border-radius:12px;background:#eef2ff}
+.product h3{font-size:16px;margin:12px 0 6px}
+.product p{color:#2563eb;font-weight:800}
+.product small{color:#64748b}
+.table-wrap{background:white;border-radius:18px;padding:20px;overflow-x:auto;box-shadow:0 8px 25px #1e40af0b}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th,td{text-align:left;padding:14px;border-bottom:1px solid #edf0f7;font-size:14px}
+th{color:#64748b;font-size:12px;text-transform:uppercase}
+.status{padding:6px 10px;border-radius:20px;background:#e0e7ff;color:#3730a3;font-size:12px;font-weight:700}
+.empty{padding:25px;text-align:center;color:#64748b}
+footer{text-align:center;padding:30px;color:#64748b;font-size:13px}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:850px){.stats,.quick{grid-template-columns:repeat(2,1fr)}.product-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:550px){.navbar{padding:0 4%;height:65px}.logo{font-size:19px}.navlinks{gap:10px}.navlinks>a:not(.keep){display:none}.container{width:92%;margin:22px auto}.hero{padding:27px 22px}.stats,.quick,.product-grid{grid-template-columns:1fr}.heading{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="logo">Shop<span>Sphere.</span></div>
+    <div class="navlinks">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'products' %}">Shop</a>
+        <a class="keep" href="{% url 'customer_dashboard' %}">My Account</a>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="logout" type="submit">Logout ↗</button>
+        </form>
+    </div>
+</nav>
+
+<main class="container">
+
+<section class="hero">
+    <h1>Welcome back, {{ request.user.username }}! 👋</h1>
+    <p>Your shopping experience, all in one place. Discover products and manage your orders.</p>
+    <div class="tag">✨ Your personal shopping space</div>
+</section>
+
+<div class="heading">
+    <h2>Your Shopping Overview</h2>
+    <p>Everything you need, in one place</p>
+</div>
+
+<section class="stats">
+    <div class="stat">
+        <div class="stat-icon">🛒</div>
+        <h3 class="counter" data-value="{{ cart_count }}">0</h3>
+        <p>Items in your cart</p>
+    </div>
+    <div class="stat">
+        <div class="stat-icon">❤️</div>
+        <h3 class="counter" data-value="{{ wishlist_count }}">0</h3>
+        <p>Saved wishlist items</p>
+    </div>
+    <div class="stat">
+        <div class="stat-icon">📦</div>
+        <h3 class="counter" data-value="{{ order_count }}">0</h3>
+        <p>Total orders placed</p>
+    </div>
+</section>
+
+<div class="heading"><h2>Quick Access</h2></div>
+
+<section class="quick">
+    <a href="{% url 'products' %}">
+        <div class="symbol">🛍️</div>
+        <h3>Explore Products</h3>
+        <p>Discover products and find something you love.</p>
+    </a>
+    <a href="{% url 'products' %}">
+        <div class="symbol">🛒</div>
+        <h3>Shopping Cart</h3>
+        <p>Your cart currently has {{ cart_count }} item(s), worth ₹{{ cart_total }}.</p>
+    </a>
+    <a href="#orders">
+        <div class="symbol">🚚</div>
+        <h3>Track Orders</h3>
+        <p>Check the latest status of your purchases.</p>
+    </a>
+</section>
+
+<div class="heading"><h2>Recent Products</h2><a href="{% url 'products' %}">View all →</a></div>
+
+<section class="product-grid">
+    {% for item in recent_products %}
+    <div class="product">
+        {% if item.image_url %}
+            <img src="{{ item.image_url.url }}" alt="{{ item.name }}">
+        {% else %}
+            <img src="https://placehold.co/400x300/eaf0ff/2563eb?text=Product" alt="Product image">
+        {% endif %}
+        <h3>{{ item.name }}</h3>
+        <p>₹{{ item.price }}</p>
+        <small>{{ item.stock }} available</small>
+    </div>
+    {% empty %}
+    <div class="empty">No products available yet.</div>
+    {% endfor %}
+</section>
+
+<div class="heading" id="orders"><h2>Your Recent Orders</h2></div>
+
+<div class="table-wrap">
+<table>
+    <thead>
+        <tr><th>Order ID</th><th>Date</th><th>Amount</th><th>Payment</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>#{{ order.id }}</td>
+            <td>{{ order.created_at|date:"d M Y" }}</td>
+            <td>₹{{ order.total_amount }}</td>
+            <td>{{ order.get_payment_method_display }}</td>
+            <td><span class="status">{{ order.status }}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="empty">You haven't placed any orders yet. Start shopping!</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+</main>
+
+<footer>© 2026 ShopSphere. Your shopping journey starts here.</footer>
+
+<script>
+document.querySelectorAll(".counter").forEach(counter => {
+    const target = Number(counter.dataset.value) || 0;
+    let current = 0;
+    const step = Math.max(1, Math.ceil(target / 35));
+
+    const timer = setInterval(() => {
+        current = Math.min(current + step, target);
+        counter.textContent = current;
+        if (current >= target) clearInterval(timer);
+    }, 25);
+});
+</script>
+
+</body>
+</html>

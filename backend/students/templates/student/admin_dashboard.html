@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Store Admin | ShopSphere</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Arial,sans-serif}
+body{background:#f3f6fc;color:#172554}
+a{text-decoration:none;color:inherit}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:245px;background:#14234f;color:white;padding:27px 18px;position:fixed;top:0;bottom:0;left:0;display:flex;flex-direction:column;z-index:5}
+.brand{font-size:23px;font-weight:850;padding:0 12px 35px}
+.brand span{color:#60a5fa}
+.menu-title{color:#94a3b8;font-size:11px;letter-spacing:1.5px;padding:10px 12px}
+.menu a{display:flex;align-items:center;gap:13px;padding:14px 13px;margin:5px 0;border-radius:11px;color:#cbd5e1;font-size:14px;transition:.25s}
+.menu a:hover,.menu a.active{background:linear-gradient(100deg,#2563eb,#4f46e5);color:white;transform:translateX(4px)}
+.sidebar-bottom{margin-top:auto;border-top:1px solid #ffffff20;padding-top:18px}
+.main{margin-left:245px;width:calc(100% - 245px);padding:30px 35px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:30px}
+.topbar h1{font-size:27px}
+.topbar p{color:#64748b;margin-top:5px;font-size:14px}
+.admin-user{display:flex;align-items:center;gap:10px;background:white;padding:10px 15px;border-radius:13px;box-shadow:0 5px 18px #1725540a}
+.avatar{width:38px;height:38px;border-radius:12px;background:#e0eaff;display:grid;place-items:center;font-size:20px}
+.admin-user small{color:#64748b}
+.hero{padding:25px 30px;background:linear-gradient(110deg,#172f78,#2563eb,#635bdf);color:white;border-radius:19px;margin-bottom:25px;box-shadow:0 12px 30px #2563eb25;position:relative;overflow:hidden;animation:rise .6s ease}
+.hero:after{content:"";position:absolute;width:220px;height:220px;right:5%;top:-125px;border-radius:50%;background:#ffffff18;box-shadow:0 0 0 35px #ffffff0c}
+.hero h2{font-size:24px;margin-bottom:8px;position:relative;z-index:1}
+.hero p{color:#dbeafe;font-size:14px;position:relative;z-index:1}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:17px}
+.stat{background:white;padding:21px;border-radius:17px;box-shadow:0 7px 25px #1725540a;border:1px solid #e9eef9;transition:.3s;animation:rise .7s both}
+.stat:hover{transform:translateY(-7px);box-shadow:0 15px 30px #2563eb17}
+.stat-icon{width:44px;height:44px;border-radius:13px;background:#eaf0ff;display:grid;place-items:center;font-size:22px;margin-bottom:15px}
+.stat p{font-size:13px;color:#64748b}
+.stat h2{font-size:25px;margin:7px 0 3px}
+.content-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:20px;margin-top:22px}
+.panel{background:white;border:1px solid #e9eef9;border-radius:18px;padding:22px;box-shadow:0 7px 25px #17255409;min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px}
+.panel-head h3{font-size:17px}
+.panel-head span{font-size:12px;color:#64748b}
+.chart-wrap{height:265px;position:relative}
+.table-panel{margin-top:22px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:570px}
+th,td{text-align:left;padding:14px 12px;border-bottom:1px solid #edf0f7;font-size:13px}
+th{font-size:11px;text-transform:uppercase;color:#64748b}
+.status{padding:6px 10px;border-radius:20px;background:#e0e7ff;color:#3730a3;font-weight:700;font-size:11px;white-space:nowrap}
+.status.Pending{background:#fef3c7;color:#92400e}
+.status.Shipped{background:#dbeafe;color:#1d4ed8}
+.status.Delivered{background:#dcfce7;color:#166534}
+.status.Cancelled{background:#fee2e2;color:#b91c1c}
+.stock-list{display:flex;flex-direction:column;gap:13px}
+.stock-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:13px;background:#f8faff;border-radius:12px}
+.stock-item strong{font-size:13px}
+.stock-item small{display:block;color:#64748b;margin-top:4px}
+.stock-count{background:#fee2e2;color:#b91c1c;border-radius:9px;padding:7px 10px;font-weight:800;font-size:12px;white-space:nowrap}
+.quick-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.action{background:#eaf0ff;color:#1d4ed8;padding:11px 15px;border-radius:10px;font-weight:700;font-size:13px;transition:.2s}
+.action:hover{background:#dbeafe;transform:translateY(-3px)}
+.logout{border:0;background:#ef4444;color:white;padding:10px 15px;border-radius:10px;font-weight:700;cursor:pointer}
+.empty{padding:20px;text-align:center;color:#64748b}
+footer{text-align:center;color:#94a3b8;font-size:12px;padding:25px}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(2,1fr)}.content-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.sidebar{width:65px;padding:20px 7px}.brand{font-size:0;padding:8px 5px 30px}.brand:after{content:"S";font-size:25px;color:#60a5fa}.menu-title{font-size:0}.menu a{font-size:0;justify-content:center;padding:15px 5px}.menu a span{font-size:20px}.sidebar-bottom .menu a{font-size:0}.main{margin-left:65px;width:calc(100% - 65px);padding:20px 13px}.topbar h1{font-size:21px}.topbar p{font-size:12px}.admin-user{padding:7px}.admin-user div:last-child{display:none}.stats{gap:10px}.stat{padding:15px}.stat h2{font-size:20px}.hero{padding:22px}.panel{padding:15px}}
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+    <div class="brand">Shop<span>Sphere.</span></div>
+
+    <div class="menu-title">MAIN MENU</div>
+    <nav class="menu">
+        <a class="active" href="{% url 'admin_dashboard' %}"><span>▦</span> Dashboard</a>
+        <a href="{% url 'products' %}"><span>🛍️</span> Products</a>
+        <a href="#orders"><span>📦</span> Orders</a>
+        <a href="#inventory"><span>📊</span> Inventory</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+        <div class="menu-title">ACCOUNT</div>
+        <nav class="menu">
+            <a href="{% url 'home' %}"><span>⌂</span> Visit Store</a>
+            <a href="/admin/"><span>⚙️</span> Django Admin</a>
+        </nav>
+    </div>
+</aside>
+
+<main class="main">
+
+<header class="topbar">
+    <div>
+        <h1>Dashboard Overview</h1>
+        <p>Monitor your store performance and manage your business.</p>
+    </div>
+
+    <div class="admin-user">
+        <div class="avatar">👨‍💼</div>
+        <div>
+            <strong>{{ request.user.username }}</strong><br>
+            <small>Store Administrator</small>
+        </div>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="logout" type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<section class="hero">
+    <h2>Welcome to your control centre 👋</h2>
+    <p>Here's what's happening with your store. Keep track of every sale, order and product.</p>
+</section>
+
+<section class="stats">
+    <div class="stat">
+        <div class="stat-icon">💰</div>
+        <p>Total Revenue</p>
+        <h2>₹<span class="counter" data-value="{{ total_revenue }}">0</span></h2>
+        <small>Excludes cancelled orders</small>
+    </div>
+
+    <div class="stat">
+        <div class="stat-icon">📦</div>
+        <p>Total Orders</p>
+        <h2 class="counter" data-value="{{ total_orders }}">0</h2>
+        <small>{{ pending_orders }} pending orders</small>
+    </div>
+
+    <div class="stat">
+        <div class="stat-icon">🛍️</div>
+        <p>Total Products</p>
+        <h2 class="counter" data-value="{{ total_products }}">0</h2>
+        <small>Products in catalogue</small>
+    </div>
+
+    <div class="stat">
+        <div class="stat-icon">👥</div>
+        <p>Total Customers</p>
+        <h2 class="counter" data-value="{{ total_customers }}">0</h2>
+        <small>Registered customer accounts</small>
+    </div>
+</section>
+
+<section class="content-grid">
+
+    <div class="panel">
+        <div class="panel-head">
+            <h3>Sales Analytics</h3>
+            <span>Last 7 days</span>
+        </div>
+        <div class="chart-wrap">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+
+    <div class="panel" id="inventory">
+        <div class="panel-head">
+            <h3>⚠️ Low Stock Alerts</h3>
+            <span>5 or fewer units</span>
+        </div>
+
+        <div class="stock-list">
+            {% for item in low_stock_products %}
+            <div class="stock-item">
+                <div>
+                    <strong>{{ item.name }}</strong>
+                    <small>Product inventory</small>
+                </div>
+                <div class="stock-count">{{ item.stock }} left</div>
+            </div>
+            {% empty %}
+            <div class="empty">All products are sufficiently stocked 🎉</div>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+
+<section class="panel table-panel" id="orders">
+    <div class="panel-head">
+        <h3>Recent Orders</h3>
+        <span>Latest 8 orders</span>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Payment</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>{{ order.created_at|date:"d M Y" }}</td>
+                    <td>{{ order.get_payment_method_display }}</td>
+                    <td>₹{{ order.total_amount }}</td>
+                    <td><span class="status {{ order.status }}">{{ order.status }}</span></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="empty">No orders have been placed yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="quick-actions">
+    <a class="action" href="{% url 'products' %}">🛍️ View Products</a>
+    <a class="action" href="/admin/students/product/">＋ Manage Products</a>
+    <a class="action" href="/admin/students/order/">📦 Manage Orders</a>
+    <a class="action" href="/admin/auth/user/">👥 Manage Customers</a>
+</div>
+
+<footer>ShopSphere Admin · Store Management System · 2026</footer>
+
+</main>
+</div>
+{{ sales_labels|json_script:"sales-labels" }}
+{{ sales_values|json_script:"sales-values" }}
+<script>
+document.querySelectorAll(".counter").forEach(counter => {
+    const target = Number(counter.dataset.value) || 0;
+    const duration = 900;
+    const start = performance.now();
+
+    function animate(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        counter.textContent = Math.floor(target * eased).toLocaleString("en-IN");
+
+        if (progress < 1) requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+});
+
+const labels = JSON.parse(
+    document.getElementById("sales-labels").textContent
+);
+
+const values = JSON.parse(
+    document.getElementById("sales-values").textContent
+);
+
+new Chart(document.getElementById("salesChart"), {
+    type: "line",
+    data: {
+        labels: labels,
+        datasets: [{
+            label: "Sales (₹)",
+            data: values,
+            borderColor: "#2563eb",
+            backgroundColor: "rgba(37,99,235,.12)",
+            fill: true,
+            tension: .4,
+            borderWidth: 3,
+            pointRadius: 4,
+            pointHoverRadius: 7
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: value => "₹" + value.toLocaleString("en-IN")
+                },
+                grid: { color: "#edf0f7" }
+            },
+            x: {
+                grid: { display: false }
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>
